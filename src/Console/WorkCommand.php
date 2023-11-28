@@ -8,7 +8,7 @@ use Digbang\SafeQueue\Worker;
 
 class WorkCommand extends IlluminateWorkCommand
 {
-    const SIGNATURE_REGEX_PATTERN = '/([\w:-]+)(?=\s|\{)/i';
+    public const SIGNATURE_REGEX_PATTERN = '/([\w:-]+)(?=\s|\{)/i';
 
     /**
      * The console command description.

@@ -84,7 +84,7 @@ class WorkerTest extends TestCase
         $this->cache         = m::mock(Repository::class);
         $this->exceptions    = m::mock(Handler::class);
         $this->managerRegistry = m::mock(ManagerRegistry::class);
-        $isDownForMaintenance= function () {
+        $isDownForMaintenance = function () {
             return false;
         };
 
@@ -145,7 +145,8 @@ class WorkerTest extends TestCase
         $job->shouldHaveReceived('fire')->once();
     }
 
-    public function testMultipleEntityManagers() {
+    public function testMultipleEntityManagers()
+    {
         $job = m::spy(Job::class);
         $job->shouldIgnoreMissing();
 

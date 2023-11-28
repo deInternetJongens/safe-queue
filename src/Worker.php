@@ -76,7 +76,7 @@ class Worker extends IlluminateWorker
     {
         foreach ($this->managerRegistry->getManagers() as $entityManager) {
             if (!$entityManager->isOpen()) {
-                throw new EntityManagerClosedException;
+                throw new EntityManagerClosedException();
             }
         }
     }
