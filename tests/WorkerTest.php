@@ -1,7 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
-namespace tests\Digbang\SafeQueue;
+namespace Digbang\SafeQueue\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
@@ -21,6 +22,8 @@ use PHPUnit\Framework\TestCase;
 
 class WorkerTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     /**
      * @var QueueManager|m\MockInterface
      */
@@ -96,12 +99,7 @@ class WorkerTest extends TestCase
         $this->entityManager->shouldReceive('getConnection')->andReturn($this->dbConnection);
     }
 
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
-    protected function prepareToRunJob($job)
+    protected function prepareToRunJob($job): void
     {
         if ($job instanceof Job) {
             $jobs = [$job];
@@ -114,6 +112,7 @@ class WorkerTest extends TestCase
         $this->queueManager->shouldReceive('getName')->andReturn('test');
 
         $this->queue->shouldReceive('pop')->andReturn(...$jobs);
+        $this->queue->shouldReceive('getConnectionName')->andReturn('test');
     }
 
     public function testExtendsLaravelWorker()
@@ -123,8 +122,7 @@ class WorkerTest extends TestCase
 
     public function testChecksEmState()
     {
-        $job = m::mock(Job::class);
-        $job->shouldReceive('fire')->once();
+        $job = m::spy(Job::class);
         $job->shouldIgnoreMissing();
 
         $this->prepareToRunJob($job);
@@ -143,11 +141,12 @@ class WorkerTest extends TestCase
         $this->managerRegistry->shouldReceive('getManagers')->andReturn(array($this->entityManager));
 
         $this->worker->runNextJob('connection', 'queue', $this->options);
+
+        $job->shouldHaveReceived('fire')->once();
     }
 
     public function testMultipleEntityManagers() {
-        $job = m::mock(Job::class);
-        $job->shouldReceive('fire')->once();
+        $job = m::spy(Job::class);
         $job->shouldIgnoreMissing();
 
         $this->prepareToRunJob($job);
@@ -172,5 +171,7 @@ class WorkerTest extends TestCase
         $this->managerRegistry->shouldReceive('getManagers')->andReturn(array($this->entityManager, $secondManager));
 
         $this->worker->runNextJob('connection', 'queue', $this->options);
+
+        $job->shouldHaveReceived('fire')->once();
     }
 }

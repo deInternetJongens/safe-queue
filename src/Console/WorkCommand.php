@@ -31,7 +31,7 @@ class WorkCommand extends IlluminateWorkCommand
         parent::__construct($worker, $cache);
     }
 
-    public function renameCommandInSignature($commandName)
+    public function renameCommandInSignature($commandName): void
     {
         if ($commandName) {
             /**

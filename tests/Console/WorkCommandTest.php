@@ -1,7 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
-namespace tests\Digbang\SafeQueue\Console;
+namespace Digbang\SafeQueue\Tests\Console;
 
 use Mockery as m;
 use ReflectionClass;
@@ -12,6 +13,8 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 
 class WorkCommandTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     /**
      * @var Worker|m\MockInterface
      */

@@ -2,24 +2,17 @@
 
 namespace Digbang\SafeQueue;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\Worker as IlluminateWorker;
-use Illuminate\Queue\WorkerOptions;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Throwable;
 
 class Worker extends IlluminateWorker
 {
-    /**
-     * @var ManagerRegistry
-     */
-    protected $managerRegistry;
+    protected ManagerRegistry $managerRegistry;
 
     /**
      * Worker constructor.
@@ -28,7 +21,7 @@ class Worker extends IlluminateWorker
      * @param Dispatcher $events
      * @param ManagerRegistry $managerRegistry
      * @param ExceptionHandler $exceptions
-     * @param \callable $isDownForMaintenance
+     * @param callable $isDownForMaintenance
      */
     public function __construct(
         QueueManager $manager,
@@ -62,10 +55,8 @@ class Worker extends IlluminateWorker
             $this->assertGoodDatabaseConnection();
         } catch (EntityManagerClosedException $e) {
             $exception = $e;
-        } catch (Exception $e) {
+        } catch (Exception|Throwable $e) {
             $exception = new QueueSetupException("Error in queue setup while getting next job", 0, $e);
-        } catch (Throwable $e) {
-            $exception = new QueueSetupException("Error in queue setup while getting next job", 0, new FatalThrowableError($e));
         }
 
         if ($exception) {

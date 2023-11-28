@@ -2,24 +2,22 @@
 
 namespace Digbang\SafeQueue;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Digbang\SafeQueue\Console\WorkCommand;
 use Illuminate\Contracts\Cache\Repository as Cache;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 
 /**
  * @codeCoverageIgnore
  */
-class DoctrineQueueProvider extends ServiceProvider
+class DoctrineQueueProvider extends ServiceProvider implements DeferrableProvider
 {
-    protected $defer = true;
-
     /**
      * Register the service provider.
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         if (!$this->isLumen()) {
             $this->publishes([
@@ -35,7 +33,7 @@ class DoctrineQueueProvider extends ServiceProvider
         $this->registerWorker();
     }
 
-    public function boot()
+    public function boot(): void
     {
         $this->commands('command.safeQueue.work');
     }
@@ -43,7 +41,7 @@ class DoctrineQueueProvider extends ServiceProvider
     /**
      * @return void
      */
-    protected function registerWorker()
+    protected function registerWorker(): void
     {
         $this->registerWorkCommand();
 
@@ -65,7 +63,7 @@ class DoctrineQueueProvider extends ServiceProvider
     /**
      * @return void
      */
-    protected function registerWorkCommand()
+    protected function registerWorkCommand(): void
     {
         $this->app->singleton('command.safeQueue.work', function ($app) {
             return new WorkCommand(
@@ -81,7 +79,7 @@ class DoctrineQueueProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [
             'safeQueue.worker',
@@ -92,8 +90,8 @@ class DoctrineQueueProvider extends ServiceProvider
     /**
      * @return bool
      */
-    protected function isLumen()
+    protected function isLumen(): bool
     {
-        return strpos($this->app->version(), 'Lumen') !== false;
+        return str_contains($this->app->version(), 'Lumen');
     }
 }
